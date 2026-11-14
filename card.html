@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Go-Now household card</title>
+  <style>
+    @page {
+      size: A6;
+      margin: 6mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 11pt;
+    }
+
+    body {
+      margin: 0;
+      color: #111;
+      background: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.08;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .title {
+      display: flex;
+      align-items: flex-start;
+      gap: 2mm;
+      margin: 0 0 2mm;
+      font-size: 15pt;
+      line-height: 1.05;
+    }
+
+    .title svg,
+    .section-heading svg {
+      flex: 0 0 auto;
+      width: 6mm;
+      height: 6mm;
+      color: #111;
+    }
+
+    .section {
+      margin: 0 0 1.5mm;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 1.5mm;
+      margin: 0 0 0.6mm;
+      padding-bottom: 0.5mm;
+      border-bottom: 0.35mm solid #111;
+      font-size: 11pt;
+      line-height: 1;
+    }
+
+    .section-heading svg {
+      width: 5mm;
+      height: 5mm;
+    }
+
+    ul {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 3mm;
+      row-gap: 0.7mm;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    li {
+      min-width: 0;
+      break-inside: avoid;
+    }
+
+    .english,
+    .pidgin {
+      display: block;
+      font-size: 11pt;
+      line-height: 1.02;
+    }
+
+    .english {
+      font-weight: 700;
+    }
+
+    .pidgin {
+      margin-top: 0.25mm;
+    }
+
+    .numbers {
+      margin-top: 1.5mm;
+      padding-top: 1mm;
+      border-top: 0.5mm solid #111;
+      font-size: 11pt;
+      line-height: 1.04;
+    }
+
+    .number-line {
+      margin: 0 0 0.6mm;
+    }
+
+    .draft {
+      margin: 1mm 0 0;
+      font-size: 11pt;
+      line-height: 1.02;
+    }
+
+    .print-button {
+      display: block;
+      margin: 4mm auto 0;
+      padding: 2mm 4mm;
+      border: 1px solid #111;
+      border-radius: 1mm;
+      background: #fff;
+      color: #111;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .print-button:focus-visible {
+      outline: 2px solid #111;
+      outline-offset: 2px;
+    }
+
+    @media screen {
+      html {
+        font-size: 17.6pt;
+      }
+
+      .card {
+        max-width: 832px;
+      }
+
+      .title {
+        gap: 3.2mm;
+        margin-bottom: 3.2mm;
+        font-size: 24pt;
+      }
+
+      .title svg {
+        width: 9.6mm;
+        height: 9.6mm;
+      }
+
+      .section {
+        margin-bottom: 2.4mm;
+      }
+
+      .section-heading {
+        gap: 2.4mm;
+        margin-bottom: 1mm;
+        padding-bottom: 0.8mm;
+        border-bottom-width: 0.56mm;
+        font-size: 17.6pt;
+      }
+
+      .section-heading svg {
+        width: 8mm;
+        height: 8mm;
+      }
+
+      ul {
+        column-gap: 4.8mm;
+        row-gap: 1.12mm;
+      }
+
+      .english,
+      .pidgin {
+        font-size: 17.6pt;
+      }
+
+      .pidgin {
+        margin-top: 0.4mm;
+      }
+
+      .numbers {
+        margin-top: 2.4mm;
+        padding-top: 1.6mm;
+        border-top-width: 0.8mm;
+        font-size: 17.6pt;
+      }
+
+      .number-line {
+        margin-bottom: 1mm;
+      }
+
+      .draft {
+        margin-top: 1.6mm;
+        font-size: 17.6pt;
+      }
+
+      .print-button {
+        margin-top: 6.4mm;
+      }
+    }
+
+    @media screen and (max-width: 600px) {
+      .card {
+        max-width: 100%;
+      }
+
+      ul {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      .card {
+        max-width: none;
+      }
+
+      .print-button {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1 class="title">
+      <svg viewBox="0 0 24 24" role="img" aria-label="Warning">
+        <path d="M12 2 1.8 21h20.4L12 2Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M12 8v6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="12" cy="17.5" r="1.2" fill="currentColor"/>
+      </svg>
+      <span>Go now if you see any of these. Do not wait for morning.</span>
+    </h1>
+
+    <section class="section" aria-labelledby="pregnancy-heading">
+      <h2 class="section-heading" id="pregnancy-heading">
+        <svg viewBox="0 0 24 24" role="img" aria-label="Pregnant person">
+          <circle cx="10" cy="4" r="2.5" fill="currentColor"/>
+          <path d="M9 8c-2 2-2 5-1 7l-2 6m5-13c4 1 5 4 5 7h-5l-1 6m0-7h6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Pregnant or just delivered
+      </h2>
+      <ul>
+        <li><span class="english">Vaginal bleeding</span><span class="pidgin">Vagina dey bleed.</span></li>
+        <li><span class="english">Fits</span><span class="pidgin">Body dey shake.</span></li>
+        <li><span class="english">Severe headache with blurred sight</span><span class="pidgin">Head pain bad; eye blur.</span></li>
+        <li><span class="english">Fever and too weak to get up</span><span class="pidgin">Body hot, too weak stand.</span></li>
+        <li><span class="english">Severe belly pain</span><span class="pidgin">Belle pain bad.</span></li>
+        <li><span class="english">Fast or difficult breathing</span><span class="pidgin">Breath fast or hard.</span></li>
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="child-heading">
+      <h2 class="section-heading" id="child-heading">
+        <svg viewBox="0 0 24 24" role="img" aria-label="Child">
+          <circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2.2"/>
+          <path d="M5 21v-2a7 7 0 0 1 14 0v2M9.5 8h.1m4.8 0h.1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        Child under 5
+      </h2>
+      <ul>
+        <li><span class="english">Cannot drink or breastfeed</span><span class="pidgin">E no fit drink or suck.</span></li>
+        <li><span class="english">Vomits everything</span><span class="pidgin">E vomit all wey e chop.</span></li>
+        <li><span class="english">Fits</span><span class="pidgin">Body dey shake.</span></li>
+        <li><span class="english">Very sleepy or cannot be woken</span><span class="pidgin">E sleep deep; no wake am.</span></li>
+      </ul>
+    </section>
+
+    <section class="numbers" aria-label="Emergency numbers">
+      <p class="number-line"><strong>SAVEMAMA 3581:</strong> free call, USSD or text for pregnant women's emergency transport</p>
+      <p class="number-line"><strong>112:</strong> emergency line</p>
+      <p class="number-line"><strong>Your health worker:</strong> ________ (write in)</p>
+      <p class="number-line"><strong>HEALA line:</strong> *000# (demo code)</p>
+    </section>
+
+    <p class="draft">Draft wording, pending clinical review. The Pidgin is a draft too.</p>
+    <button class="print-button" type="button" onclick="window.print()">Print this card</button>
+  </main>
+</body>
+</html>

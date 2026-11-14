@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0F2A33">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>HEALA Handshake: emergency referral demo</title>
+<style>
+:root{
+  --ink:#0F2A33; --river:#0E5A6B; --signal:#E8A317; --ok:#1E8E5A; --no:#C23B2E;
+  --bg:#EDF1F2; --panel:#FFFFFF; --line:#C9D5D9; --mute:#5B7079; --lcd:#CFE2BD; --lcdInk:#1B2B14;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.45}
+button{font:inherit;cursor:pointer;min-height:46px}
+input,select{font:inherit;min-height:46px}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+button:focus-visible{position:relative;z-index:1}
+input::placeholder{color:#465960;opacity:1}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--ink);color:#fff}
+.brand b{font-size:1.35rem;letter-spacing:.2px}
+.brand span{display:block;color:#9FC2CC;font-size:.9rem}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:.92rem}
+.ctl label{display:flex;gap:6px;align-items:center;min-height:46px}
+#fast{width:24px;height:24px;min-height:24px}
+.btn{background:var(--signal);color:var(--ink);border:0;border-radius:6px;padding:9px 14px;font-weight:700}
+.btn.ghost{background:transparent;color:#fff;border:1px solid #5E8591;font-weight:500}
+.btn.small{padding:6px 10px;font-size:.85rem}
+.btn.ok{background:#176B45;color:#fff}
+.btn.no{background:#fff;color:var(--no);border:1px solid var(--no);font-weight:600}
+.btn.line{background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:600}
+.banner{background:#FFF4D6;border-bottom:1px solid #E8D18A;padding:8px 20px;font-size:.88rem}
+.roles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:12px 20px;background:#DCE6E9;border-bottom:1px solid var(--line)}
+.role-button{min-height:52px;padding:10px 12px;border:2px solid var(--river);border-radius:8px;background:#fff;color:var(--ink);font-weight:700}
+.role-button[aria-pressed="true"]{background:var(--river);color:#fff}
+.role-button:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.who{margin:0 0 8px;font-weight:700;color:var(--river)}
+.grid{display:grid;grid-template-columns:340px minmax(0,1fr) 340px;gap:16px;padding:16px 20px;align-items:start}
+.grid[data-role="all"] #colDash{grid-column:1/-1}
+.grid:not([data-role="all"]){grid-template-columns:minmax(0,1fr);margin:0 auto}
+.grid[data-role="nurse"],.grid[data-role="family"]{max-width:560px}
+.grid[data-role="hospital"]{max-width:900px}
+.grid[data-role="dashboard"]{max-width:1240px}
+.grid [hidden]{display:none}
+@media(max-width:1099px){.grid{grid-template-columns:minmax(0,1fr)}.grid[data-role="all"] #colDash{grid-column:auto}}
+@media(max-width:720px){.grid{padding:12px}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card h2{margin:0 0 8px;font-size:1.05rem}
+.card h3{margin:14px 0 6px;font-size:.95rem}
+.mute{color:var(--mute);font-size:.86rem}
+.phone{background:#1B2F37;border-radius:26px 26px 40px 40px;padding:18px 16px 20px;margin:10px 0}
+.lcd{background:var(--lcd);color:var(--lcdInk);font-family:"Courier New",Consolas,monospace;font-size:.95rem;border-radius:6px;padding:10px;min-height:190px;white-space:pre-wrap;border:3px solid #0E1A1F;box-shadow:inset 0 0 0 2px #A9C096}
+.lcd input{width:100%;margin-top:8px;background:#E4F0D6;border:1px solid #6B8456;border-radius:3px;padding:6px;font:inherit;color:var(--lcdInk)}
+.dial{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.dial button{flex:1 1 130px}
+.sel{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;background:#fff;font:inherit;color:var(--ink)}
+.inbox{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.msg{background:#F2F6F7;border-left:4px solid var(--river);border-radius:4px;padding:6px 8px;font-size:.84rem;word-break:break-word}
+.msg small{display:block;color:var(--mute);font-size:.74rem}
+.msg.bad{border-color:var(--no)}.msg.good{border-color:var(--ok)}.msg.warn{border-color:var(--signal)}
+.hosp{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px}
+.hosp h4{margin:0 0 4px;font-size:.95rem;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.row input{flex:1 1 140px;min-width:0;padding:7px;border:1px solid var(--line);border-radius:6px;font:inherit}
+.chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.74rem;font-weight:700;border:1px solid var(--line);background:#fff;color:var(--ink);white-space:nowrap}
+.chip.SEEKING{background:#FFF1CC;border-color:var(--signal)}
+.chip.ESCALATED{background:#FFE1B8;border-color:#D07A00}
+.chip.ACCEPTED{background:#D6F1E2;border-color:var(--ok)}
+.chip.ARRIVED{background:#BFE8D2;border-color:var(--ok)}
+.chip.CLOSED{background:#E4E9EB}
+.chip.UNMATCHED{background:#F9D6D1;border-color:var(--no)}
+.chip.unv{background:#fff;border-style:dashed;color:var(--mute)}
+.chip.ver{background:#E2F1F4;border-color:var(--river);color:var(--river)}
+.chip.demo{background:#FFF4D6;border-color:#E8D18A;color:#5A4300}
+.badge-group{display:inline-flex;align-items:center;gap:4px}
+.cap{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 8px;font-size:.8rem;margin:2px}
+.cap.on{background:var(--river);color:#fff;border-color:var(--river)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
+.kpi{background:#F2F6F7;border-radius:8px;padding:8px 10px}
+.kpi b{display:block;font-size:1.3rem}
+.kpi span{font-size:.76rem;color:var(--mute)}
+.ref-timer{margin:12px 0 10px;padding:12px 14px;background:#F2F6F7;border:1px solid var(--line);border-radius:8px}
+.timer-label{display:block;color:var(--mute);font-size:.72rem;font-weight:700;letter-spacing:.04em}
+.timer-value{display:block;margin-top:6px;font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.1;letter-spacing:.04em;font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.patient-progress{container-type:inline-size;margin:0 0 12px;padding:12px;background:#F2F6F7;border:1px solid var(--line);border-radius:8px}
+.patient-progress h3{margin:0 0 8px;font-size:.95rem}
+.patient-steps{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:0;padding:0;list-style:none}
+.patient-steps:before{content:"";position:absolute;z-index:0;top:16px;left:10%;right:10%;height:2px;background:var(--line)}
+.patient-steps li{position:relative;z-index:1;display:flex;min-width:0;flex-direction:column;align-items:center;padding:0 2px;border:0;background:transparent;color:#465960;text-align:center}
+.step-marker{display:grid;width:34px;height:34px;flex:0 0 34px;place-items:center;border:2px solid #9EADB2;border-radius:50%;background:#E4E9EB;color:#344B53;font-size:15px;font-weight:700;line-height:1}
+.step-label{display:block;padding-top:4px;font-size:13px;line-height:1.25;overflow-wrap:anywhere}
+.patient-steps li.done .step-marker{border-color:#176B45;background:#176B45;color:#fff}
+.patient-steps li.current .step-marker{border:3px solid var(--signal);background:#FFF4D6;color:#5A4300}
+.patient-steps li.current .step-label{font-weight:800;color:var(--ink)}
+@container (max-width:399px){
+  .patient-steps{grid-template-columns:minmax(0,1fr);gap:8px}
+  .patient-steps:before{top:16px;right:auto;bottom:16px;left:16px;width:2px;height:auto}
+  .patient-steps li{flex-direction:row;gap:10px;text-align:left}
+  .step-label{padding-top:0;text-align:left}
+}
+.patient-summary{margin:8px 0 0;font-weight:600}
+.patient-simulated{display:block;margin-top:4px;color:var(--mute);font-size:.76rem}
+.accepted-banner{display:block;margin:8px 0 12px;padding:8px 12px;border-radius:8px;background:#D6F1E2;border:1px solid var(--ok);font-weight:700}
+.unmatched-alert{display:block;margin:10px 0 14px;padding:14px 16px;border:3px solid #7D1B14;border-radius:8px;background:#A52820;color:#fff;font-size:clamp(1.25rem,3vw,1.8rem);font-weight:800;line-height:1.35}
+.unmatched-alert:focus{outline:4px solid var(--signal);outline-offset:3px}
+.unmatched-alert small{display:block;margin-top:8px;font-size:.95rem;font-weight:600}
+.simulated-tag{display:inline-flex;align-items:center;margin-bottom:8px;padding:3px 8px;border-radius:999px;background:#FFF4D6;border:1px solid #D9AF38;color:#5A4300;font-size:.76rem;font-weight:700}
+.event-age{display:inline-block;min-width:48px;font-weight:700;color:var(--river);font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.tl li{display:flex;gap:8px;align-items:flex-start;padding:6px 0}
+.tl li > span{flex-shrink:0}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th,td{text-align:left;padding:6px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--mute);font-size:.78rem}
+.ref{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px;background:#fff;width:100%;text-align:left}
+.ref.sel{border:2px solid var(--river)}
+.ref b{font-size:1.02rem}
+.tl{margin:6px 0 0;padding:0;list-style:none;font-size:.84rem}
+.tl li{padding:3px 0;border-bottom:1px dashed var(--line)}
+svg.map{width:100%;height:auto;background:#F6F9FA;border:1px solid var(--line);border-radius:8px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.76rem;color:var(--mute);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.transparency{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+.transparency summary{font-weight:700;cursor:pointer}
+.transparency-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.transparency-grid h3{margin:0 0 4px;font-size:.9rem}
+.transparency-grid p{margin:0;color:var(--mute);font-size:.84rem}
+footer{padding:14px 20px 28px;font-size:.8rem;color:var(--mute)}
+.empty{padding:14px;border:1px dashed var(--line);border-radius:8px;color:var(--mute);font-size:.9rem}
+@media(max-width:600px){
+  .top{padding:12px}
+  .ctl{width:100%}
+  .ctl .btn{flex:1 1 auto}
+  .roles{grid-template-columns:repeat(2,minmax(0,1fr));padding:10px;gap:8px}
+  .role-button{min-height:56px;padding:8px;line-height:1.25}
+  .grid{padding:10px}
+  .card{padding:12px}
+  .hosp h4{flex-wrap:wrap}
+  .badge-group{flex-wrap:wrap;min-width:0}
+  .mute,.msg,.msg small,.chip,.cap,.kpi span,.timer-label,.simulated-tag,table,th,.tl,.legend,.transparency-grid p,.transparency-grid h3,.empty,footer,.banner,.brand span,.ctl,.btn.small,td:before{font-size:16px}
+  .transparency-grid{grid-template-columns:1fr}
+  .dial button{flex:1 1 100%}
+  table,thead,tbody,tr,th,td{display:block}
+  table{width:100%}
+  thead{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  tbody,tr,td{min-width:0}
+  tbody tr{padding:6px 0;border-bottom:1px solid var(--line)}
+  td{padding:5px 6px;border:0;overflow-wrap:anywhere}
+  td:before{content:attr(data-label);display:block;color:var(--mute);font-size:.76rem;font-weight:600}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><b>HEALA Handshake</b><span>No patient leaves until a bed says yes.</span></div>
+  <div class="ctl">
+    <button class="btn" id="btnGuided">Run guided demo</button>
+    <label><input type="checkbox" id="fast"> Fast timers (5 min becomes 30 s)</label>
+    <button class="btn ghost small" id="btnReset">Reset demo</button>
+  </div>
+</header>
+<nav class="roles" id="rolePicker" aria-label="Choose who is viewing the demo">
+  <button class="role-button" type="button" data-role="nurse" aria-pressed="false">Nurse (referring)</button>
+  <button class="role-button" type="button" data-role="hospital" aria-pressed="false">Hospital</button>
+  <button class="role-button" type="button" data-role="family" aria-pressed="false">Family</button>
+  <button class="role-button" type="button" data-role="dashboard" aria-pressed="false">State dashboard</button>
+  <button class="role-button" type="button" data-role="all" aria-pressed="false">All screens</button>
+</nav>
+<div class="banner"><b>Simulation.</b> No real SMS or USSD is sent. Hospital capabilities, readiness times and phone numbers are demo values. The facility list is real registry data.</div>
+
+<main class="grid" id="panels" data-role="all">
+  <section id="colPhone" class="card" data-role-panel="nurse" aria-label="Health worker phone">
+    <p class="who" id="nurseYouAre">You are: the midwife at the referring facility</p>
+    <div class="patient-progress" id="nursePatientProgress" aria-live="polite"></div>
+    <h2>1. Midwife's feature phone</h2>
+    <p class="mute" style="margin:0 0 8px">No data, no smartphone. The midwife dials a USSD line.</p>
+    <label class="mute" for="origin">Signed-in health worker's facility</label>
+    <select id="origin" class="sel"></select>
+    <div class="phone">
+      <div class="lcd" id="lcd" aria-live="polite"></div>
+      <div class="dial">
+        <button class="btn small" data-act="dial" data-line="referral">Dial referral line *000#</button>
+      </div>
+    </div>
+    <p class="mute">*000# is a placeholder. A live code needs telecom approval.</p>
+    <h3>SMS on the midwife's phone</h3>
+    <div class="inbox" id="mwInbox" role="log" aria-label="SMS on the midwife's phone" aria-live="polite" aria-relevant="additions text" aria-atomic="false"></div>
+  </section>
+
+  <section id="colHosp" class="card" data-role-panel="hospital" aria-label="Hospital phones">
+    <h2>2. Hospital phones</h2>
+    <p class="mute" style="margin:0 0 8px">Each hospital replies by SMS. Tap a button or type the reply.</p>
+    <div id="hospList"></div>
+    <h3>Readiness pulse (demo)</h3>
+    <p class="mute" style="margin:0 0 6px">Hospitals text what they have twice a day. Tap to flip what a demo hospital has, the same as replying "R B0 O1 D1 T1 W1 N3".</p>
+    <div id="readiness"></div>
+  </section>
+
+  <section id="colFamily" class="card" data-role-panel="family" aria-label="Family phone">
+    <p class="who">You are: the patient's family</p>
+    <div class="patient-progress" id="familyPatientProgress" aria-live="polite"></div>
+    <h2>Family phone</h2>
+    <p class="mute" style="margin:0 0 8px">The family can check danger signs and receive the hospital's Go-Now message.</p>
+    <div class="phone">
+      <div class="lcd" id="familyLcd" aria-live="polite"></div>
+      <div class="dial">
+        <button class="btn small line" data-act="dial-family">Dial family Go-Now line *000*1#</button>
+      </div>
+    </div>
+    <h3>SMS on the family's phone</h3>
+    <div class="inbox" id="famInbox" role="log" aria-label="SMS on the family's phone" aria-live="polite" aria-relevant="additions text" aria-atomic="false"></div>
+  </section>
+
+  <section id="colDash" class="card" data-role-panel="dashboard" aria-label="Live dashboard">
+    <p class="who">You are: a state health official</p>
+    <div class="patient-progress" id="dashboardPatientProgress" aria-live="polite"></div>
+    <h2>3. Live referral dashboard</h2>
+    <div class="kpis" id="kpis"></div>
+    <div class="row"><button class="btn small line" id="btnCsv" type="button">Download referral log (CSV)</button></div>
+    <div id="refList"></div>
+    <div id="detail"></div>
+    <h3>Facility scorecard</h3>
+    <div id="scorecard"></div>
+    <h3>Supply gaps (decline reasons)</h3>
+    <p class="mute">Demo alert threshold: 3 or more "no blood" replies at one facility.</p>
+    <div id="gapAlert"></div>
+    <div id="supplyGaps"></div>
+    <h3>Map of the pilot cluster</h3>
+    <div id="mapBox"></div>
+    <div class="legend">
+      <span><i style="background:#9FB3BA"></i>Primary facility</span>
+      <span><i style="background:#0F2A33"></i>Hospital (receiver)</span>
+      <span><i style="background:#E8A317"></i>Referring facility</span>
+      <span><i style="background:#1E8E5A"></i>Accepted</span>
+      <span><i style="background:#C23B2E"></i>Declined</span>
+    </div>
+    <details class="transparency" open>
+      <summary>What is real and what is simulated</summary>
+      <div class="transparency-grid">
+        <div>
+          <h3>Real today</h3>
+          <p>Facility list from the registry extract (GRID3, snapshot dated 11 Nov 2024); the matching and ranking logic; the SMS keyword and 160-character rules.</p>
+        </div>
+        <div>
+          <h3>Simulated</h3>
+          <p>SMS and USSD delivery; hospital capabilities and readiness times (demo values); all phone numbers.</p>
+        </div>
+        <div>
+          <h3>Next step</h3>
+          <p>Live gateway sandbox; one-cluster pilot; clinical review of wording.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+</main>
+
+<footer>
+  Facility list: Nigeria Health Facility Registry extract (GRID3), snapshot dated 11 Nov 2024, 410 facilities in nine Delta LGAs. Distances are straight-line and travel times are estimates (boat 25 km/h, road 40 km/h). Danger-sign wording in the Go-Now line is a draft pending clinical review.
+  <p><a href="./card.html">Print the Go-Now card</a></p>
+</footer>
+
+<script src="./js/data.js"></script>
+<script src="./js/engine.js"></script>
+<script src="./js/app.js"></script>
+<script src="js/pwa.js"></script>
+</body>
+</html>
